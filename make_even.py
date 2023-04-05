@@ -1,9 +1,9 @@
-from PyPDF2 import PdfFileReader
-from PyPDF2 import PdfFileWriter
+from PyPDF2 import PdfReader
+from PyPDF2 import PdfWriter
 import os
 
-folder = "./sw"
-duplex = True
+folder = "./einseitig"
+duplex = False
 
 # remove old output
 try:
@@ -13,7 +13,7 @@ except:
 
 def multiply_pdf(file:str):
     total_list = []
-    number = int(file.split("_")[0].split("x")[0])
+    number = int(file.split("_")[1])
     for i in range(number):
         total_list.append(file)
     return total_list
@@ -65,16 +65,18 @@ for file in all_files:
     multi_list = multiply_pdf(file)
     fullPDF = fullPDF + multi_list
 
+fullPDF.sort()
+
 print(fullPDF)
 
 # merge whole list
-outpdf=PdfFileWriter()
+outpdf=PdfWriter()
 openFileStreams = []
 
 for file in fullPDF:
     pdfFileObj = open(os.path.join(os.getcwd(),folder,file), 'rb')
-    pdf=PdfFileReader(pdfFileObj)
-    outpdf.appendPagesFromReader(pdf)
+    pdf=PdfReader(pdfFileObj)
+    outpdf.append_pages_from_reader(pdf)
     openFileStreams.append(pdfFileObj)
 
 with open(os.path.join(os.getcwd(),folder, "output.pdf"), 'wb') as pdfTempObj:
